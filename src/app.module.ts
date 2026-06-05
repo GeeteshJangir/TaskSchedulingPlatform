@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { WorkspacesModule } from './modules/workspaces/workspaces.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { CommentsModule } from './modules/comments/comments.module';
 
 /**
  * Root module. Feature modules (auth, workspaces, projects, tasks, comments,
@@ -34,6 +35,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
     WorkspacesModule,
     ProjectsModule,
     TasksModule,
+    CommentsModule,
   ],
 })
 export class AppModule {}

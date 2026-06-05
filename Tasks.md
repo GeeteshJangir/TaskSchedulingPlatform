@@ -3,10 +3,10 @@
 **Project:** Scalable Collaborative Task & Scheduling Platform (NestJS modular monolith)
 **Last updated:** 2026-06-05
 
-## 📊 Overall progress: ~55%  (41 / 75 items)
+## 📊 Overall progress: ~59%  (44 / 75 items)
 
 ```
-[██████████████████░░░░░░░░░░░░░░] 55%
+[███████████████████░░░░░░░░░░░░░] 59%
 ```
 
 | Phase | Status | Done |
@@ -16,7 +16,7 @@
 | P2 — Workspaces & RBAC | ✅ Complete | 9/9 |
 | P3 — Projects | ✅ Complete | 4/4 |
 | P4 — Tasks & Subtasks | ✅ Complete | 9/9 |
-| P5 — Comments & Activity | ⬜ Not started | 0/6 |
+| P5 — Comments & Activity | 🟡 In progress | 3/6 |
 | P6 — Async Backbone & Notifications | ⬜ Not started | 0/8 |
 | P7 — Scheduler & Reminders | ⬜ Not started | 0/6 |
 | P8 — Realtime (bonus) | ⬜ Not started | 0/3 |
@@ -81,13 +81,13 @@
 - [x] TasksController
 - [x] unit tests
 
-## P5 — Comments & Activity ⬜ (0/6)
-- [ ] M `comments` (self-ref replies) + entity
-- [ ] CommentsService + controller
-- [ ] M `task_activity` + entity
-- [ ] activity listeners (event-driven audit log)
-- [ ] activity feed (paginated)
-- [ ] unit tests
+## P5 — Comments & Activity 🟡 (3/6)
+- [x] M8 `comments` (self-ref replies) + entity
+- [x] CommentsService + controller (threaded; author edits, author/ADMIN delete)
+- [x] comments unit tests
+- [ ] M9 `task_activity` + entity ← module 2
+- [ ] activity listeners (consume task/comment events) ← module 2
+- [ ] activity feed (paginated) ← module 2
 
 ## P6 — Async Backbone & Notifications ⬜ (0/8)
 - [ ] BullMQ + Redis wiring
