@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 import configuration from './config/configuration';
 import { QueueModule } from './queue/queue.module';
 import { envValidationSchema } from './config/env.validation';
@@ -15,6 +16,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { ActivityModule } from './modules/activity/activity.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { RemindersModule } from './modules/reminders/reminders.module';
 
 /**
  * Root module. Feature modules (auth, workspaces, projects, tasks, comments,
@@ -30,6 +32,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
       validationOptions: { allowUnknown: true, abortEarly: false },
     }),
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
     QueueModule.forRoot(),
     CommonModule,
     DatabaseModule,
@@ -42,6 +45,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     CommentsModule,
     ActivityModule,
     NotificationsModule,
+    RemindersModule,
   ],
 })
 export class AppModule {}

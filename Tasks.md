@@ -3,10 +3,10 @@
 **Project:** Scalable Collaborative Task & Scheduling Platform (NestJS modular monolith)
 **Last updated:** 2026-06-05
 
-## 📊 Overall progress: ~73%  (55 / 75 items)
+## 📊 Overall progress: ~79%  (59 / 75 items)
 
 ```
-[███████████████████████░░░░░░░░░] 73%
+[█████████████████████████░░░░░░░] 79%
 ```
 
 | Phase | Status | Done |
@@ -18,7 +18,7 @@
 | P4 — Tasks & Subtasks | ✅ Complete | 9/9 |
 | P5 — Comments & Activity | ✅ Complete | 6/6 |
 | P6 — Async Backbone & Notifications | ✅ Code-complete | 8/8 |
-| P7 — Scheduler & Reminders | ⬜ Not started | 0/6 |
+| P7 — Scheduler & Reminders | 🟡 In progress | 4/6 |
 | P8 — Realtime (bonus) | ⬜ Not started | 0/3 |
 | P9 — Scalability Hardening | ⬜ Not started | 0/5 |
 | P10 — Observability, Tests, Docs, CI/CD | ⬜ Not started | 0/6 |
@@ -100,13 +100,13 @@
 - [x] idempotency (dedup jobId) + retry/backoff + DLQ (failed-set)
 - ⏳ live queue/worker run pending Upstash Redis (in-process path verified live)
 
-## P7 — Scheduler & Reminders ⬜ (0/6)
-- [ ] M `reminders` + entity (idempotency unique key)
-- [ ] cron scan job (worker)
-- [ ] due-soon / overdue detection → enqueue
-- [ ] send-reminder worker + mark sent/failed
-- [ ] retry / backoff / DLQ
-- [ ] unit tests (idempotency)
+## P7 — Scheduler & Reminders 🟡 (4/6)
+- [x] M11 `reminders` + entity (idempotency unique key)
+- [x] cron scan job (worker-gated `@Cron` + manual `POST /reminders/scan`)
+- [x] due-soon / overdue detection (24h window; idempotent rows)
+- [x] unit tests (scan + idempotency)
+- [ ] send-reminder worker + mark sent/failed ← module 2 (queue)
+- [ ] retry / backoff / DLQ ← module 2 (queue)
 
 ## P8 — Realtime (bonus) ⬜ (0/3)
 - [ ] Socket.IO gateway + JWT handshake
