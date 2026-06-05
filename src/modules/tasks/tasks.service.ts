@@ -25,6 +25,10 @@ import {
   TASK_CREATED,
   TASK_STATUS_CHANGED,
 } from './events/task-events';
+import { SubtreeNode } from './types';
+
+/** Max nesting depth (root = 0). Guards re-parenting against runaway trees. */
+const MAX_DEPTH = 5;
 
 @Injectable()
 export class TasksService {
@@ -188,5 +192,143 @@ export class TasksService {
   ): Promise<void> {
     const task = await this.findOneOrFail(workspaceId, projectId, taskId);
     await this.tasks.remove(task);
+  }
+
+  /**
+   * Fetches a task and all its descendants as a nested tree (with depth),
+   * using a single recursive CTE rather than N queries.
+   */
+  async getSubtree(
+    workspaceId: string,
+    projectId: string,
+    taskId: string,
+  ): Promise<SubtreeNode> {
+    await this.findOneOrFail(workspaceId, projectId, taskId);
+
+    const rows: Array<{
+      id: string;
+      parent_task_id: string | null;
+      title: string;
+      status: string;
+      priority: string;
+      assignee_id: string | null;
+      due_date: Date | null;
+      depth: number;
+    }> = await this.tasks.manager.query(
+      `WITH RECURSIVE subtree AS (
+         SELECT t.id, t.parent_task_id, t.title, t.status, t.priority,
+                t.assignee_id, t.due_date, 0 AS depth
+         FROM tasks t
+         WHERE t.id = $1 AND t.project_id = $2
+         UNION ALL
+         SELECT c.id, c.parent_task_id, c.title, c.status, c.priority,
+                c.assignee_id, c.due_date, s.depth + 1
+         FROM tasks c
+         JOIN subtree s ON c.parent_task_id = s.id
+       )
+       SELECT * FROM subtree ORDER BY depth ASC, id ASC`,
+      [taskId, projectId],
+    );
+
+    const nodes = new Map<string, SubtreeNode>();
+    for (const r of rows) {
+      nodes.set(r.id, {
+        id: r.id,
+        title: r.title,
+        status: r.status,
+        priority: r.priority,
+        assigneeId: r.assignee_id,
+        dueDate: r.due_date,
+        depth: Number(r.depth),
+        children: [],
+      });
+    }
+    let root: SubtreeNode | undefined;
+    for (const r of rows) {
+      const node = nodes.get(r.id)!;
+      if (r.id === taskId) {
+        root = node;
+      } else if (r.parent_task_id) {
+        nodes.get(r.parent_task_id)?.children.push(node);
+      }
+    }
+    // findOneOrFail above guarantees the root exists.
+    return root!;
+  }
+
+  /**
+   * Re-parents a task. Guards: parent must be in the same project, not the task
+   * itself, not a descendant (cycle), and the resulting depth must not exceed
+   * MAX_DEPTH.
+   */
+  async moveTask(
+    workspaceId: string,
+    projectId: string,
+    taskId: string,
+    newParentId: string | null,
+  ): Promise<Task> {
+    const task = await this.findOneOrFail(workspaceId, projectId, taskId);
+
+    if (newParentId === null) {
+      task.parentTaskId = null;
+      return this.tasks.save(task);
+    }
+    if (newParentId === taskId) {
+      throw new BadRequestException('A task cannot be its own parent');
+    }
+
+    const newParent = await this.tasks.findOne({
+      where: { id: newParentId, projectId },
+    });
+    if (!newParent) {
+      throw new BadRequestException('New parent task not found in this project');
+    }
+
+    const descendants: Array<{ id: string; depth: number }> =
+      await this.tasks.manager.query(
+        `WITH RECURSIVE d AS (
+           SELECT id, parent_task_id, 0 AS depth FROM tasks WHERE id = $1
+           UNION ALL
+           SELECT c.id, c.parent_task_id, d.depth + 1
+           FROM tasks c JOIN d ON c.parent_task_id = d.id
+         )
+         SELECT id, depth FROM d`,
+        [taskId],
+      );
+
+    if (descendants.some((d) => d.id === newParentId)) {
+      throw new BadRequestException(
+        'Cannot move a task underneath its own descendant (would create a cycle)',
+      );
+    }
+
+    const subtreeHeight = descendants.reduce(
+      (max, d) => Math.max(max, Number(d.depth)),
+      0,
+    );
+    const parentDepth = await this.depthOf(newParentId);
+    if (parentDepth + 1 + subtreeHeight > MAX_DEPTH) {
+      throw new BadRequestException(
+        `Maximum nesting depth of ${MAX_DEPTH} would be exceeded`,
+      );
+    }
+
+    task.parentTaskId = newParentId;
+    return this.tasks.save(task);
+  }
+
+  /** Depth of a task from its root (root = 0), via an upward recursive walk. */
+  private async depthOf(taskId: string): Promise<number> {
+    const rows: Array<{ depth: number }> = await this.tasks.manager.query(
+      `WITH RECURSIVE a AS (
+         SELECT id, parent_task_id, 0 AS depth FROM tasks WHERE id = $1
+         UNION ALL
+         SELECT t.id, t.parent_task_id, a.depth + 1
+         FROM tasks t JOIN a ON t.id = a.parent_task_id
+       )
+       SELECT COALESCE(MAX(depth), 0) AS depth FROM a`,
+      [taskId],
+    );
+    return Number(rows[0]?.depth ?? 0);
   }
 }

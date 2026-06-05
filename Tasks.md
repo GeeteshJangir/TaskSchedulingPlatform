@@ -3,10 +3,10 @@
 **Project:** Scalable Collaborative Task & Scheduling Platform (NestJS modular monolith)
 **Last updated:** 2026-06-05
 
-## 📊 Overall progress: ~52%  (39 / 75 items)
+## 📊 Overall progress: ~55%  (41 / 75 items)
 
 ```
-[█████████████████░░░░░░░░░░░░░░░] 52%
+[██████████████████░░░░░░░░░░░░░░] 55%
 ```
 
 | Phase | Status | Done |
@@ -15,7 +15,7 @@
 | P1 — Auth & Users | ✅ Complete | 9/9 |
 | P2 — Workspaces & RBAC | ✅ Complete | 9/9 |
 | P3 — Projects | ✅ Complete | 4/4 |
-| P4 — Tasks & Subtasks | 🟡 In progress | 7/9 |
+| P4 — Tasks & Subtasks | ✅ Complete | 9/9 |
 | P5 — Comments & Activity | ⬜ Not started | 0/6 |
 | P6 — Async Backbone & Notifications | ⬜ Not started | 0/8 |
 | P7 — Scheduler & Reminders | ⬜ Not started | 0/6 |
@@ -70,13 +70,13 @@
 - [x] ProjectsController — member view, ADMIN mutate
 - [x] unit tests
 
-## P4 — Tasks & Subtasks 🟡 (7/9)
+## P4 — Tasks & Subtasks ✅ (9/9)
 - [x] M7 `tasks` (self-ref `parent_task_id`, status/priority enums, assignee, due_date)
 - [x] Task entity
 - [x] TasksService — CRUD + assignment + status/priority/due-date
 - [x] filtering + keyset pagination
-- [ ] recursive-CTE subtree fetch ← module 2
-- [ ] cycle + depth guards ← module 2
+- [x] recursive-CTE subtree fetch (`GET …/tasks/:id/subtree`, nested + depth)
+- [x] cycle + depth guards (max depth 5; cycle prevention on re-parent via `…/move`)
 - [x] domain events emitted (task.created / assigned / status_changed / completed)
 - [x] TasksController
 - [x] unit tests

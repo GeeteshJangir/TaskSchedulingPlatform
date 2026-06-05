@@ -26,6 +26,7 @@ describe('TasksService', () => {
       findOne: jest.fn(),
       remove: jest.fn(),
       createQueryBuilder: jest.fn(),
+      manager: { query: jest.fn() },
     };
     projects = { findOneOrFail: jest.fn().mockResolvedValue({ id: 'p1' }) };
     events = { emit: jest.fn() };
@@ -125,5 +126,66 @@ describe('TasksService', () => {
     const page = await service.list('w1', 'p1', { limit: 2 });
     expect(page.data).toHaveLength(2);
     expect(page.meta.hasMore).toBe(true);
+  });
+
+  it('getSubtree() builds a nested tree with depth', async () => {
+    repo.findOne.mockResolvedValue({ id: 'root', projectId: 'p1' });
+    repo.manager.query.mockResolvedValue([
+      { id: 'root', parent_task_id: null, title: 'R', status: 'TODO', priority: 'MEDIUM', assignee_id: null, due_date: null, depth: 0 },
+      { id: 'c1', parent_task_id: 'root', title: 'C1', status: 'TODO', priority: 'LOW', assignee_id: null, due_date: null, depth: 1 },
+      { id: 'c2', parent_task_id: 'c1', title: 'C2', status: 'TODO', priority: 'LOW', assignee_id: null, due_date: null, depth: 2 },
+    ]);
+
+    const tree = await service.getSubtree('w1', 'p1', 'root');
+    expect(tree.id).toBe('root');
+    expect(tree.children).toHaveLength(1);
+    expect(tree.children[0].id).toBe('c1');
+    expect(tree.children[0].children[0].id).toBe('c2');
+    expect(tree.children[0].children[0].depth).toBe(2);
+  });
+
+  it('moveTask() rejects a move that would create a cycle', async () => {
+    repo.findOne
+      .mockResolvedValueOnce({ id: 't1', projectId: 'p1', parentTaskId: null })
+      .mockResolvedValueOnce({ id: 't2', projectId: 'p1' });
+    // t2 is a descendant of t1
+    repo.manager.query.mockResolvedValueOnce([
+      { id: 't1', depth: 0 },
+      { id: 't2', depth: 1 },
+    ]);
+    await expect(service.moveTask('w1', 'p1', 't1', 't2')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+  });
+
+  it('moveTask() rejects exceeding max nesting depth', async () => {
+    repo.findOne
+      .mockResolvedValueOnce({ id: 't1', projectId: 'p1', parentTaskId: null })
+      .mockResolvedValueOnce({ id: 'np', projectId: 'p1' });
+    repo.manager.query
+      .mockResolvedValueOnce([{ id: 't1', depth: 0 }, { id: 'x', depth: 3 }]) // height 3
+      .mockResolvedValueOnce([{ depth: 4 }]); // parent depth 4 -> 4+1+3 = 8 > 5
+    await expect(service.moveTask('w1', 'p1', 't1', 'np')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+  });
+
+  it('moveTask() sets the new parent when valid', async () => {
+    const task = { id: 't1', projectId: 'p1', parentTaskId: null };
+    repo.findOne
+      .mockResolvedValueOnce(task)
+      .mockResolvedValueOnce({ id: 'np', projectId: 'p1' });
+    repo.manager.query
+      .mockResolvedValueOnce([{ id: 't1', depth: 0 }]) // height 0
+      .mockResolvedValueOnce([{ depth: 1 }]); // parent depth 1 -> 1+1+0 = 2 <= 5
+    await service.moveTask('w1', 'p1', 't1', 'np');
+    expect(task.parentTaskId).toBe('np');
+  });
+
+  it('moveTask(null) moves the task to the top level', async () => {
+    const task = { id: 't1', projectId: 'p1', parentTaskId: 'old' };
+    repo.findOne.mockResolvedValueOnce(task);
+    await service.moveTask('w1', 'p1', 't1', null);
+    expect(task.parentTaskId).toBeNull();
   });
 });

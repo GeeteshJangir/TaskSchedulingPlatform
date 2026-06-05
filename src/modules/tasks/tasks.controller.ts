@@ -18,6 +18,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { WorkspaceMemberGuard } from '../workspaces/guards/workspace-member.guard';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { ListTasksQueryDto } from './dto/list-tasks.query.dto';
+import { MoveTaskDto } from './dto/move-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TasksService } from './tasks.service';
 
@@ -54,6 +55,25 @@ export class TasksController {
     @Param('taskId', ParseUUIDPipe) taskId: string,
   ) {
     return this.tasks.findOneOrFail(workspaceId, projectId, taskId);
+  }
+
+  @Get(':taskId/subtree')
+  subtree(
+    @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
+    @Param('projectId', ParseUUIDPipe) projectId: string,
+    @Param('taskId', ParseUUIDPipe) taskId: string,
+  ) {
+    return this.tasks.getSubtree(workspaceId, projectId, taskId);
+  }
+
+  @Patch(':taskId/move')
+  move(
+    @Param('workspaceId', ParseUUIDPipe) workspaceId: string,
+    @Param('projectId', ParseUUIDPipe) projectId: string,
+    @Param('taskId', ParseUUIDPipe) taskId: string,
+    @Body() dto: MoveTaskDto,
+  ) {
+    return this.tasks.moveTask(workspaceId, projectId, taskId, dto.parentTaskId);
   }
 
   @Patch(':taskId')
