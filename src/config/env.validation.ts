@@ -32,9 +32,11 @@ export const envValidationSchema = Joi.object({
   DB_LOGGING: Joi.boolean().default(false),
   DB_SSL: Joi.boolean().default(false),
 
-  // Redis (consumed from Phase 6)
+  // Redis / queue (consumed from Phase 6)
   REDIS_HOST: Joi.string().default('localhost'),
   REDIS_PORT: Joi.number().port().default(6379),
+  REDIS_URL: Joi.string().optional(),
+  QUEUE_ENABLED: Joi.boolean().default(false),
 
   // Auth (consumed from Phase 1)
   JWT_ACCESS_SECRET: Joi.string().default('dev-access-secret-change-me'),

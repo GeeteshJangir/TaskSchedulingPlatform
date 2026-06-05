@@ -25,6 +25,11 @@ export default () => ({
     port: parseInt(process.env.REDIS_PORT ?? '6379', 10),
   },
 
+  queue: {
+    enabled: (process.env.QUEUE_ENABLED ?? 'false') === 'true',
+    redisUrl: process.env.REDIS_URL || undefined,
+  },
+
   jwt: {
     accessSecret: process.env.JWT_ACCESS_SECRET ?? 'dev-access-secret-change-me',
     accessTtl: process.env.JWT_ACCESS_TTL ?? '15m',

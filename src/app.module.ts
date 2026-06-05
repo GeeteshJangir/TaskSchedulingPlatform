@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import configuration from './config/configuration';
+import { QueueModule } from './queue/queue.module';
 import { envValidationSchema } from './config/env.validation';
 import { CommonModule } from './common/common.module';
 import { DatabaseModule } from './database/database.module';
@@ -29,6 +30,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
       validationOptions: { allowUnknown: true, abortEarly: false },
     }),
     EventEmitterModule.forRoot(),
+    QueueModule.forRoot(),
     CommonModule,
     DatabaseModule,
     HealthModule,

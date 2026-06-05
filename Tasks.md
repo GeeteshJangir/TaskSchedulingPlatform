@@ -3,10 +3,10 @@
 **Project:** Scalable Collaborative Task & Scheduling Platform (NestJS modular monolith)
 **Last updated:** 2026-06-05
 
-## 📊 Overall progress: ~68%  (51 / 75 items)
+## 📊 Overall progress: ~73%  (55 / 75 items)
 
 ```
-[██████████████████████░░░░░░░░░░] 68%
+[███████████████████████░░░░░░░░░] 73%
 ```
 
 | Phase | Status | Done |
@@ -17,7 +17,7 @@
 | P3 — Projects | ✅ Complete | 4/4 |
 | P4 — Tasks & Subtasks | ✅ Complete | 9/9 |
 | P5 — Comments & Activity | ✅ Complete | 6/6 |
-| P6 — Async Backbone & Notifications | 🟡 In progress | 4/8 |
+| P6 — Async Backbone & Notifications | ✅ Code-complete | 8/8 |
 | P7 — Scheduler & Reminders | ⬜ Not started | 0/6 |
 | P8 — Realtime (bonus) | ⬜ Not started | 0/3 |
 | P9 — Scalability Hardening | ⬜ Not started | 0/5 |
@@ -89,15 +89,16 @@
 - [x] activity listeners (consume task/comment events → audit rows)
 - [x] activity feed (paginated, `GET …/tasks/:id/activity`)
 
-## P6 — Async Backbone & Notifications 🟡 (4/8)
+## P6 — Async Backbone & Notifications ✅ (8/8)
 - [x] M10 `notifications` + entity (per-user inbox, unread partial index)
 - [x] read / unread endpoints (list, unread-count, mark-read, read-all)
-- [x] notification unit tests (service + listener)
-- [x] event-driven delivery in-process (assigned/completed/comment/reply, self-skip)
-- [ ] BullMQ + Redis wiring ← module 2
-- [ ] worker run-mode queue consumers ← module 2
-- [ ] move delivery to queue + channel abstraction ← module 2
-- [ ] idempotency + retry/backoff + DLQ ← module 2
+- [x] unit tests (service + listeners + mappers + processor — 22 tests)
+- [x] event-driven delivery (shared mappers; in-process **or** queue by config)
+- [x] BullMQ + Redis wiring (QueueModule, config-gated by `QUEUE_ENABLED`)
+- [x] worker run-mode queue consumers (`NotificationProcessor`)
+- [x] queue delivery path + channel abstraction (in-app channel; pluggable)
+- [x] idempotency (dedup jobId) + retry/backoff + DLQ (failed-set)
+- ⏳ live queue/worker run pending Upstash Redis (in-process path verified live)
 
 ## P7 — Scheduler & Reminders ⬜ (0/6)
 - [ ] M `reminders` + entity (idempotency unique key)
