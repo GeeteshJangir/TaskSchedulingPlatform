@@ -135,6 +135,7 @@
   unblocks live migrations + verification without Docker.
 - **Target:** Docker Compose (`docker compose up --build`) once Docker Desktop is installed.
 - App supports both: a single `DATABASE_URL` (Neon) **or** discrete `DB_*` fields (compose).
+- **Repo:** github.com/GeeteshJangir/TaskSchedulingPlatform (`main`). Commit per module/phase with conventional messages; `.env` is gitignored so the Neon secret stays local.
 
 ## ✅ Live verification — DONE on Neon (2026-06-05)
 - [x] `npm run migration:run` applied M0–M6 (`migration:show` → all `[X]`); revert not yet exercised
@@ -142,7 +143,8 @@
 - [x] E2E happy path: signup → /users/me → create workspace (slug auto) → create project → keyset list
 - [x] RBAC/auth negatives: non-member GET/POST → 403; no token → 401
 - [x] Refresh rotation + reuse detection (replayed revoked token → 401)
-- [ ] Invite → accept over HTTP (covered by unit tests; not yet exercised live)
+- [x] Invite → accept over HTTP (User A invites → User B accepts as MEMBER)
+- [x] MEMBER can create projects (post-tweak); DELETE still 403 (ADMIN-only)
 - Note: Neon us-east-1 latency ~400–600 ms/query; readiness ping timeout raised to 5 s.
 
 ## 📝 Decisions / deviations from original plan
@@ -150,6 +152,7 @@
 - Refresh tokens hashed with **SHA-256** (high-entropy → fast deterministic lookup); passwords use **argon2**.
 - Refresh tokens are **opaque** (revocable), not JWTs.
 - Test runner: `--runInBand` + `isolatedModules` (constrained-memory machine).
+- **Projects: any member can create/edit; only ADMIN deletes** (P3 tweak; differs from the original ADMIN-only matrix, per request).
 
 ## 🛠️ How to maintain this file
 1. Tick `[ ]` → `[x]` as items complete; flip the phase status emoji.
