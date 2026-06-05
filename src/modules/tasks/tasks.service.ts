@@ -179,7 +179,11 @@ export class TasksService {
         actorId,
       });
       if (saved.status === TaskStatus.DONE) {
-        this.events.emit(TASK_COMPLETED, { taskId: saved.id, actorId });
+        this.events.emit(TASK_COMPLETED, {
+          taskId: saved.id,
+          actorId,
+          creatorId: saved.createdBy,
+        });
       }
     }
     return saved;

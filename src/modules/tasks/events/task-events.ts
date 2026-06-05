@@ -30,4 +30,6 @@ export interface TaskStatusChangedEvent {
 export interface TaskCompletedEvent {
   taskId: string;
   actorId: string;
+  /** Task creator — notification recipient (set by the emitter). */
+  creatorId?: string;
 }

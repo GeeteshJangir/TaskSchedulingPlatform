@@ -13,6 +13,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { CommentsModule } from './modules/comments/comments.module';
 import { ActivityModule } from './modules/activity/activity.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 /**
  * Root module. Feature modules (auth, workspaces, projects, tasks, comments,
@@ -38,6 +39,7 @@ import { ActivityModule } from './modules/activity/activity.module';
     TasksModule,
     CommentsModule,
     ActivityModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}

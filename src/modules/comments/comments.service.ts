@@ -36,7 +36,7 @@ export class CommentsService {
     authorId: string,
     dto: CreateCommentDto,
   ): Promise<Comment> {
-    await this.tasks.findOneOrFail(workspaceId, projectId, taskId);
+    const task = await this.tasks.findOneOrFail(workspaceId, projectId, taskId);
 
     let parentAuthorId: string | undefined;
     if (dto.parentCommentId) {
@@ -63,6 +63,7 @@ export class CommentsService {
       taskId,
       authorId,
       parentCommentId: comment.parentCommentId,
+      taskAssigneeId: task.assigneeId,
     });
     if (comment.parentCommentId && parentAuthorId) {
       this.events.emit(COMMENT_REPLIED, {

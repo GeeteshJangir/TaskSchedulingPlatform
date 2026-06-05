@@ -7,6 +7,8 @@ export interface CommentCreatedEvent {
   taskId: string;
   authorId: string;
   parentCommentId: string | null;
+  /** Assignee of the task — notification recipient (set by the emitter). */
+  taskAssigneeId?: string | null;
 }
 
 export interface CommentRepliedEvent {
