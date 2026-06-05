@@ -1,0 +1,10 @@
+# Normalize all text files to LF in the repository (avoids CRLF churn on Windows).
+* text=auto eol=lf
+
+# Treat common binary assets as binary (future-proofing).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
