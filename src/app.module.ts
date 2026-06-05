@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import configuration from './config/configuration';
 import { envValidationSchema } from './config/env.validation';
 import { CommonModule } from './common/common.module';
@@ -9,6 +10,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { WorkspacesModule } from './modules/workspaces/workspaces.module';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 /**
  * Root module. Feature modules (auth, workspaces, projects, tasks, comments,
@@ -23,6 +25,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
       validationSchema: envValidationSchema,
       validationOptions: { allowUnknown: true, abortEarly: false },
     }),
+    EventEmitterModule.forRoot(),
     CommonModule,
     DatabaseModule,
     HealthModule,
@@ -30,6 +33,7 @@ import { ProjectsModule } from './modules/projects/projects.module';
     AuthModule,
     WorkspacesModule,
     ProjectsModule,
+    TasksModule,
   ],
 })
 export class AppModule {}
