@@ -62,6 +62,7 @@ export class CommentsService {
       commentId: comment.id,
       taskId,
       authorId,
+      parentCommentId: comment.parentCommentId,
     });
     if (comment.parentCommentId && parentAuthorId) {
       this.events.emit(COMMENT_REPLIED, {

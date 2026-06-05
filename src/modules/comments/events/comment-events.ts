@@ -6,6 +6,7 @@ export interface CommentCreatedEvent {
   commentId: string;
   taskId: string;
   authorId: string;
+  parentCommentId: string | null;
 }
 
 export interface CommentRepliedEvent {
