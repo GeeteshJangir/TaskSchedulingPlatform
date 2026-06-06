@@ -27,7 +27,7 @@ async function main(): Promise<void> {
     name: 'RT A',
     password: 'S3curePass!',
   });
-  const ws = await post('/workspaces', { name: 'RT WS' }, a.accessToken);
+  const ws = await post('/workspaces', { name: `RT WS ${stamp}` }, a.accessToken);
   const proj = await post(
     `/workspaces/${ws.id}/projects`,
     { name: 'Board' },

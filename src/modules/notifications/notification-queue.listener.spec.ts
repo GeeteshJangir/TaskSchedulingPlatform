@@ -17,7 +17,7 @@ describe('NotificationQueueListener', () => {
       DELIVER_JOB,
       expect.objectContaining({ recipientId: 'u2' }),
       expect.objectContaining({
-        jobId: expect.stringContaining('notif:u2:'),
+        jobId: expect.stringContaining('notif_u2_'),
         attempts: 5,
         backoff: { type: 'exponential', delay: 2000 },
         removeOnFail: false,
