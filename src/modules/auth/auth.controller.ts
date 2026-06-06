@@ -7,6 +7,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { AuthResponseDto } from './dto/auth-response.dto';
@@ -16,6 +17,8 @@ import { SignupDto } from './dto/signup.dto';
 import { SessionContext } from './types';
 
 @ApiTags('auth')
+// Tighter limit on auth endpoints (anti brute-force) than the global default.
+@Throttle({ default: { limit: 20, ttl: 60_000 } })
 @Controller('auth')
 export class AuthController {
   constructor(private readonly auth: AuthService) {}

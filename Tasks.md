@@ -3,10 +3,10 @@
 **Project:** Scalable Collaborative Task & Scheduling Platform (NestJS modular monolith)
 **Last updated:** 2026-06-05
 
-## 📊 Overall progress: ~81%  (61 / 75 items)
+## 📊 Overall progress: ~84%  (63 / 75 items)
 
 ```
-[██████████████████████████░░░░░░] 81%
+[███████████████████████████░░░░░] 84%
 ```
 
 | Phase | Status | Done |
@@ -20,7 +20,7 @@
 | P6 — Async Backbone & Notifications | ✅ Code-complete | 8/8 |
 | P7 — Scheduler & Reminders | ✅ Code-complete | 6/6 |
 | P8 — Realtime (bonus) | ⬜ Not started | 0/3 |
-| P9 — Scalability Hardening | ⬜ Not started | 0/5 |
+| P9 — Scalability Hardening | 🟡 In progress | 2/5 |
 | P10 — Observability, Tests, Docs, CI/CD | ⬜ Not started | 0/6 |
 
 **Health:** build ✅ · unit tests ✅ **51 passing** · migrations **M0–M6 applied to Neon** ✅ · live e2e (auth / RBAC / refresh / reuse) ✅
@@ -114,12 +114,12 @@
 - [ ] per-user rooms + Redis adapter
 - [ ] live push on assignment / reminder
 
-## P9 — Scalability Hardening ⬜ (0/5)
-- [ ] Redis cache-aside for membership/role + invalidation
-- [ ] EXPLAIN ANALYZE hot queries
-- [ ] tuned / partial indexes migration
-- [ ] throttler + statement timeouts
-- [ ] pagination audit
+## P9 — Scalability Hardening 🟡 (2/5)
+- [x] cache-aside for membership/role + invalidation (in-memory; Redis-store ready)
+- [x] throttler (global 120/min, auth 20/min) + statement_timeout (10s) + pool cap
+- [ ] EXPLAIN ANALYZE hot queries ← module 2
+- [ ] tuned / partial indexes migration ← module 2
+- [ ] pagination audit ← module 2
 
 ## P10 — Observability, Tests, Docs, CI/CD ⬜ (0/6)
 - [ ] pino structured logging + correlation IDs

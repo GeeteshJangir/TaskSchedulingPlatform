@@ -1,7 +1,10 @@
+import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import configuration from './config/configuration';
 import { QueueModule } from './queue/queue.module';
 import { envValidationSchema } from './config/env.validation';
@@ -31,6 +34,8 @@ import { RemindersModule } from './modules/reminders/reminders.module';
       validationSchema: envValidationSchema,
       validationOptions: { allowUnknown: true, abortEarly: false },
     }),
+    CacheModule.register({ isGlobal: true, ttl: 30_000 }),
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
     QueueModule.forRoot(),
@@ -46,6 +51,10 @@ import { RemindersModule } from './modules/reminders/reminders.module';
     ActivityModule,
     NotificationsModule,
     RemindersModule,
+  ],
+  providers: [
+    // Global rate limiting (in-memory store; swap to Redis store for multi-instance).
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}

@@ -38,6 +38,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           // warming Postgres container.
           retryAttempts: 10,
           retryDelay: 3000,
+          // Scalability guardrails: bounded pool + a per-statement timeout so a
+          // pathological query can't pin a connection indefinitely.
+          poolSize: 10,
+          extra: {
+            statement_timeout: 10_000,
+          },
         };
       },
     }),
