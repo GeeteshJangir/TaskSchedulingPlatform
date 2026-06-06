@@ -107,7 +107,7 @@
 - [x] unit tests (scan + idempotency + processor)
 - [x] send-reminder worker + mark sent/failed (`ReminderProcessor`, config-gated)
 - [x] retry / backoff / DLQ (attempts=5 + exp backoff; FAILED on exhaustion)
-- ⏳ live queue/worker run pending Upstash Redis (in-process path verified live)
+- [x] live queue/worker run **verified in Docker** (BullMQ deliver job → worker → notification)
 
 ## P8 — Realtime (bonus) ✅ (3/3)
 - [x] Socket.IO gateway + JWT handshake (verified)
@@ -148,6 +148,13 @@
 - [x] Invite → accept over HTTP (User A invites → User B accepts as MEMBER)
 - [x] MEMBER can create projects (post-tweak); DELETE still 403 (ADMIN-only)
 - Note: Neon us-east-1 latency ~400–600 ms/query; readiness ping timeout raised to 5 s.
+
+## ✅ Full-stack Docker verification — DONE (2026-06-06)
+- [x] `docker compose up --build` → postgres + redis + migrate + api + worker, all healthy
+- [x] migrate applied M0–M12 to the compose Postgres; `/api/health` db=up
+- [x] **QUEUE_ENABLED=true**: durable BullMQ delivery verified (assign → worker processes deliver job → notification)
+- [x] **Worker→API realtime bridge** verified (worker publishes → Redis → API subscriber → gateway → live socket push)
+- 🐞 This run caught + fixed a real bug: BullMQ rejects `:` in custom job ids (notification job id) — see commit `0870e43`.
 
 ## 📝 Decisions / deviations from original plan
 - M0 enables extensions only; enums created lazily in the migration that first needs them.
