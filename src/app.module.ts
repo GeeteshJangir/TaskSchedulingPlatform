@@ -5,7 +5,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { PrometheusModule } from '@willsoto/nestjs-prometheus';
+import { LoggerModule } from 'nestjs-pino';
 import configuration from './config/configuration';
+import { loggerConfig } from './config/logger.config';
 import { QueueModule } from './queue/queue.module';
 import { envValidationSchema } from './config/env.validation';
 import { CommonModule } from './common/common.module';
@@ -35,6 +38,8 @@ import { RealtimeModule } from './modules/realtime/realtime.module';
       validationSchema: envValidationSchema,
       validationOptions: { allowUnknown: true, abortEarly: false },
     }),
+    LoggerModule.forRoot(loggerConfig),
+    PrometheusModule.register(),
     CacheModule.register({ isGlobal: true, ttl: 30_000 }),
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
     EventEmitterModule.forRoot(),

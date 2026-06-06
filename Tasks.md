@@ -3,10 +3,10 @@
 **Project:** Scalable Collaborative Task & Scheduling Platform (NestJS modular monolith)
 **Last updated:** 2026-06-05
 
-## 📊 Overall progress: ~92%  (69 / 75 items)
+## 📊 Overall progress: ~96%  (72 / 75 items)
 
 ```
-[█████████████████████████████░░░] 92%
+[███████████████████████████████░] 96%
 ```
 
 | Phase | Status | Done |
@@ -21,7 +21,7 @@
 | P7 — Scheduler & Reminders | ✅ Code-complete | 6/6 |
 | P8 — Realtime (bonus) | ✅ Complete | 3/3 |
 | P9 — Scalability Hardening | ✅ Complete | 5/5 |
-| P10 — Observability, Tests, Docs, CI/CD | ⬜ Not started | 0/6 |
+| P10 — Observability, Tests, Docs, CI/CD | 🟡 In progress | 3/6 |
 
 **Health:** build ✅ · unit tests ✅ **51 passing** · migrations **M0–M6 applied to Neon** ✅ · live e2e (auth / RBAC / refresh / reuse) ✅
 
@@ -121,13 +121,13 @@
 - [x] tuned partial index — M12 unread-notifications inbox/badge
 - [x] pagination audit (all lists keyset + matching composite index; no OFFSET)
 
-## P10 — Observability, Tests, Docs, CI/CD ⬜ (0/6)
-- [ ] pino structured logging + correlation IDs
-- [ ] Terminus health (db/redis/queue) + Prometheus metrics
-- [ ] finalize Swagger
-- [ ] e2e tests (live DB / Testcontainers)
-- [ ] CI: lint → test → migrate up/down → build image
-- [ ] finalize README + architecture + ERD
+## P10 — Observability, Tests, Docs, CI/CD 🟡 (3/6)
+- [x] pino structured logging + correlation IDs (genReqId, redaction)
+- [x] Prometheus `/metrics` + DB health readiness (redis/queue health gated)
+- [x] finalize Swagger (tags, descriptions, persistAuthorization)
+- [ ] e2e tests (live DB) ← module 2
+- [ ] CI: lint → test → migrate up/down → build ← module 2
+- [ ] finalize README + architecture + ERD ← module 2
 
 ---
 

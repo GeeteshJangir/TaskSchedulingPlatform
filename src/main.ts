@@ -4,13 +4,15 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Logger as PinoLogger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 
 /**
  * API process: HTTP + (later) WebSocket. Serves the REST API and Swagger UI.
  */
 async function bootstrapApi(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { bufferLogs: false });
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.useLogger(app.get(PinoLogger));
   const config = app.get(ConfigService);
 
   app.setGlobalPrefix('api');
@@ -27,12 +29,26 @@ async function bootstrapApi(): Promise<void> {
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Task & Scheduling Platform API')
-    .setDescription('Collaborative task management — NestJS modular monolith')
-    .setVersion('0.1')
+    .setDescription(
+      'Collaborative task management — workspaces, projects, nested tasks, ' +
+        'comments, reminders and notifications. NestJS modular monolith.',
+    )
+    .setVersion('1.0')
     .addBearerAuth()
+    .addTag('auth', 'Signup, login, refresh, logout')
+    .addTag('workspaces', 'Workspaces, members, invitations, RBAC')
+    .addTag('projects')
+    .addTag('tasks', 'Tasks, nested subtasks, assignment')
+    .addTag('comments')
+    .addTag('activity')
+    .addTag('notifications')
+    .addTag('reminders')
+    .addTag('health')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('docs', app, document, {
+    swaggerOptions: { persistAuthorization: true },
+  });
 
   // Multi-instance realtime: back Socket.IO with Redis pub/sub when configured.
   // Single-instance dev uses the default in-memory adapter.

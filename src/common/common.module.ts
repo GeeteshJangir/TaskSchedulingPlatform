@@ -1,16 +1,13 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER } from '@nestjs/core';
 import { AllExceptionsFilter } from './filters/all-exceptions.filter';
-import { LoggingInterceptor } from './interceptors/logging.interceptor';
 
 /**
- * Cross-cutting concerns wired globally: the consistent error envelope and
- * per-request correlation-id logging. Imported once by AppModule.
+ * Cross-cutting concerns wired globally: the consistent error envelope.
+ * Per-request logging + correlation ids are handled by nestjs-pino (see
+ * config/logger.config.ts).
  */
 @Module({
-  providers: [
-    { provide: APP_FILTER, useClass: AllExceptionsFilter },
-    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
-  ],
+  providers: [{ provide: APP_FILTER, useClass: AllExceptionsFilter }],
 })
 export class CommonModule {}
