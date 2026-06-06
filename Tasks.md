@@ -155,6 +155,7 @@
 - Refresh tokens are **opaque** (revocable), not JWTs.
 - Test runner: `--runInBand` + `isolatedModules` (constrained-memory machine).
 - **Projects: any member can create/edit; only ADMIN deletes** (P3 tweak; differs from the original ADMIN-only matrix, per request).
+- **Realtime multi-instance**: single-instance push verified; the worker→API gap is closed by a config-gated Redis pub/sub bridge (worker publishes → API subscribes → gateway pushes). Live multi-instance run needs a Redis URL.
 
 ## 🛠️ How to maintain this file
 1. Tick `[ ]` → `[x]` as items complete; flip the phase status emoji.
