@@ -14,6 +14,15 @@ const requiredUnlessUrl = Joi.string().when('DATABASE_URL', {
   otherwise: Joi.required(),
 });
 
+// In production a JWT secret must be explicitly set, strong (>=32 chars), and
+// never the dev default — the app fails fast otherwise. Dev/test use the default.
+const productionSecret = (devDefault: string) =>
+  Joi.string().when('NODE_ENV', {
+    is: 'production',
+    then: Joi.string().min(32).invalid(devDefault).required(),
+    otherwise: Joi.string().default(devDefault),
+  });
+
 export const envValidationSchema = Joi.object({
   NODE_ENV: Joi.string()
     .valid('development', 'test', 'production')
@@ -39,8 +48,8 @@ export const envValidationSchema = Joi.object({
   QUEUE_ENABLED: Joi.boolean().default(false),
 
   // Auth (consumed from Phase 1)
-  JWT_ACCESS_SECRET: Joi.string().default('dev-access-secret-change-me'),
+  JWT_ACCESS_SECRET: productionSecret('dev-access-secret-change-me'),
   JWT_ACCESS_TTL: Joi.string().default('15m'),
-  JWT_REFRESH_SECRET: Joi.string().default('dev-refresh-secret-change-me'),
+  JWT_REFRESH_SECRET: productionSecret('dev-refresh-secret-change-me'),
   JWT_REFRESH_TTL: Joi.string().default('7d'),
 });

@@ -84,6 +84,13 @@ services:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
+    healthcheck:
+      # Worker has no HTTP — liveness = can reach Redis (its BullMQ lifeline).
+      test: ["CMD-SHELL", "node -e \"const R=require('ioredis');const c=new R({host:process.env.REDIS_HOST||'localhost',port:Number(process.env.REDIS_PORT)||6379,maxRetriesPerRequest:1});c.ping().then(()=>{c.disconnect();process.exit(0)}).catch(()=>process.exit(1))\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
 volumes:
   pgdata:

@@ -1,0 +1,47 @@
+# Production hardening overrides.
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+#
+# Hardens the dev stack: restart policies, resource limits, log rotation, and
+# NO host-exposed database/redis ports. Requires real secrets in the env
+# (NODE_ENV=production makes the app reject the dev default JWT secrets).
+name: task-scheduling-platform
+
+services:
+  postgres:
+    restart: unless-stopped
+    ports: !reset [] # never expose the database to the host in production
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512M }
+
+  redis:
+    restart: unless-stopped
+    ports: !reset []
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 256M }
+
+  migrate:
+    restart: "no"
+
+  api:
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512M }
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  worker:
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512M }
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }

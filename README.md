@@ -136,6 +136,25 @@ start on invalid env. Key variables:
 - **CI** ([.github/workflows/ci.yml](.github/workflows/ci.yml)): build → unit → migrate →
   e2e, against a Postgres service.
 
+## Operations (DevOps)
+
+- **Make targets** (`make help`): `up`, `down`, `down-v`, `logs`, `ps`, `migrate`, `test`,
+  `e2e`, `prod-up`, `prod-down`. *(Windows: run via Git Bash/WSL, or the underlying
+  `docker compose` commands.)*
+- **Production overrides** ([docker-compose.prod.yml](docker-compose.prod.yml)):
+  `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build` — adds
+  restart policies, CPU/memory limits, JSON-file log rotation, a worker healthcheck, and
+  **does not expose Postgres/Redis to the host**. `NODE_ENV=production` makes the app
+  **reject the dev-default JWT secrets**, so real `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET`
+  (≥32 chars) must be supplied.
+- **CI/CD** ([.github/workflows/ci.yml](.github/workflows/ci.yml)): build → unit → migrate →
+  e2e; on `main`, build the image, **Trivy-scan** it (fail on fixable HIGH/CRITICAL), and
+  push to **GHCR** (`:sha` + `:latest`).
+- **Dependabot** ([.github/dependabot.yml](.github/dependabot.yml)): weekly npm + GitHub
+  Actions + Docker updates.
+- **Healthchecks**: api `/api/health/live` (liveness) and `/api/health` (readiness, pings DB);
+  worker pings Redis. Compose gates startup on them.
+
 ## License
 
 UNLICENSED — assignment submission.
