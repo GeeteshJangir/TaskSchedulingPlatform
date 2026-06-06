@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- Builder: install all deps + compile TS -> dist ----
-FROM node:22-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -10,13 +10,13 @@ COPY src ./src
 RUN npm run build
 
 # ---- Prod deps: only runtime dependencies ----
-FROM node:22-alpine AS prod-deps
+FROM node:26-alpine AS prod-deps
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
 
 # ---- Runtime: slim, non-root. Reused by api / worker / migrate ----
-FROM node:22-alpine AS runtime
+FROM node:26-alpine AS runtime
 WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=prod-deps /app/node_modules ./node_modules
