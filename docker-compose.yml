@@ -49,6 +49,9 @@ services:
     command: ["node", "dist/main.js"]
     env_file: .env
     environment:
+      # Dev stack runs as development (the prod override flips this to production,
+      # which then enforces real, non-default JWT secrets).
+      NODE_ENV: development
       RUN_MODE: api
       DB_HOST: postgres
       REDIS_HOST: redis
@@ -74,6 +77,7 @@ services:
     command: ["node", "dist/main.js"]
     env_file: .env
     environment:
+      NODE_ENV: development
       RUN_MODE: worker
       DB_HOST: postgres
       REDIS_HOST: redis
