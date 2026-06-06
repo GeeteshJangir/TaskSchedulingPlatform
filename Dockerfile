@@ -22,6 +22,8 @@ ENV NODE_ENV=production
 COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY package*.json ./
+# Static web client served by the API process at /app (see src/main.ts).
+COPY public ./public
 USER node
 EXPOSE 3000
 # Default command; docker-compose overrides per service (api / worker / migrate).

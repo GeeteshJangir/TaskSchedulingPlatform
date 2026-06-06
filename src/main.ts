@@ -1,8 +1,10 @@
 import 'reflect-metadata';
 import './common/load-env';
+import { join } from 'path';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger as PinoLogger } from 'nestjs-pino';
 import { AppModule } from './app.module';
@@ -11,12 +13,18 @@ import { AppModule } from './app.module';
  * API process: HTTP + (later) WebSocket. Serves the REST API and Swagger UI.
  */
 async function bootstrapApi(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
   app.useLogger(app.get(PinoLogger));
   const config = app.get(ConfigService);
 
   app.setGlobalPrefix('api');
   app.enableCors();
+
+  // Minimal web client (end-user UI). Served only by the API process, at /app,
+  // same-origin with /api so no CORS is involved. The worker has no HTTP server.
+  app.useStaticAssets(join(process.cwd(), 'public'), { prefix: '/app' });
   app.enableShutdownHooks();
   app.useGlobalPipes(
     new ValidationPipe({
@@ -64,7 +72,7 @@ async function bootstrapApi(): Promise<void> {
   const port = config.get<number>('port') ?? 3000;
   await app.listen(port);
   Logger.log(
-    `API ready on http://localhost:${port}/api  (Swagger: /docs)`,
+    `API ready on http://localhost:${port}/api  (Web UI: /app · Swagger: /docs)`,
     'Bootstrap',
   );
 }

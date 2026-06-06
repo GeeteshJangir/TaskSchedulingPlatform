@@ -39,6 +39,9 @@ for live push.
   rate limiting, statement timeouts, async offload to workers.
 - **Observability** — pino structured logging + correlation IDs, Prometheus `/metrics`,
   health checks, Swagger/OpenAPI.
+- **Web client** — a minimal single-page UI at `/app` (served by the API process,
+  same-origin, no build step): signup/login, workspace → project → task management,
+  status/priority editing, and live Socket.IO notifications.
 
 ## Tech stack
 
@@ -87,6 +90,7 @@ docker compose up --build
 
 Starts `postgres`, `redis`, runs `migrate` (one-shot), then `api` + `worker`.
 
+- **Web UI:**  http://localhost:3000/app  ← end-user client (sign in, manage tasks, live notifications)
 - API:     http://localhost:3000/api
 - Swagger:  http://localhost:3000/docs
 - Metrics:  http://localhost:3000/api/metrics
