@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -9,6 +10,7 @@ import {
 } from '../../common/pagination/pagination.util';
 import { ListNotificationsQueryDto } from './dto/list-notifications.query.dto';
 import { Notification } from './entities/notification.entity';
+import { NOTIFICATION_CREATED } from './notification.constants';
 import { NotificationType } from './enums/notification-type.enum';
 
 export interface CreateNotificationInput {
@@ -26,10 +28,11 @@ export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
     private readonly notifications: Repository<Notification>,
+    private readonly events: EventEmitter2,
   ) {}
 
-  create(input: CreateNotificationInput): Promise<Notification> {
-    return this.notifications.save(
+  async create(input: CreateNotificationInput): Promise<Notification> {
+    const notification = await this.notifications.save(
       this.notifications.create({
         recipientId: input.recipientId,
         type: input.type,
@@ -41,6 +44,9 @@ export class NotificationsService {
         isRead: false,
       }),
     );
+    // Fan out to the realtime gateway (and any other notification.created listener).
+    this.events.emit(NOTIFICATION_CREATED, notification);
+    return notification;
   }
 
   async list(

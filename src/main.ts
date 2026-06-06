@@ -34,6 +34,17 @@ async function bootstrapApi(): Promise<void> {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document);
 
+  // Multi-instance realtime: back Socket.IO with Redis pub/sub when configured.
+  // Single-instance dev uses the default in-memory adapter.
+  const redisUrl = process.env.REDIS_URL;
+  if (redisUrl) {
+    const { RedisIoAdapter } = await import('./modules/realtime/redis-io.adapter');
+    const adapter = new RedisIoAdapter(app, redisUrl);
+    await adapter.connect();
+    app.useWebSocketAdapter(adapter);
+    Logger.log('Socket.IO: Redis adapter enabled', 'Bootstrap');
+  }
+
   const port = config.get<number>('port') ?? 3000;
   await app.listen(port);
   Logger.log(

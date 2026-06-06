@@ -3,10 +3,10 @@
 **Project:** Scalable Collaborative Task & Scheduling Platform (NestJS modular monolith)
 **Last updated:** 2026-06-05
 
-## 📊 Overall progress: ~88%  (66 / 75 items)
+## 📊 Overall progress: ~92%  (69 / 75 items)
 
 ```
-[████████████████████████████░░░░] 88%
+[█████████████████████████████░░░] 92%
 ```
 
 | Phase | Status | Done |
@@ -19,7 +19,7 @@
 | P5 — Comments & Activity | ✅ Complete | 6/6 |
 | P6 — Async Backbone & Notifications | ✅ Code-complete | 8/8 |
 | P7 — Scheduler & Reminders | ✅ Code-complete | 6/6 |
-| P8 — Realtime (bonus) | ⬜ Not started | 0/3 |
+| P8 — Realtime (bonus) | ✅ Complete | 3/3 |
 | P9 — Scalability Hardening | ✅ Complete | 5/5 |
 | P10 — Observability, Tests, Docs, CI/CD | ⬜ Not started | 0/6 |
 
@@ -109,10 +109,10 @@
 - [x] retry / backoff / DLQ (attempts=5 + exp backoff; FAILED on exhaustion)
 - ⏳ live queue/worker run pending Upstash Redis (in-process path verified live)
 
-## P8 — Realtime (bonus) ⬜ (0/3)
-- [ ] Socket.IO gateway + JWT handshake
-- [ ] per-user rooms + Redis adapter
-- [ ] live push on assignment / reminder
+## P8 — Realtime (bonus) ✅ (3/3)
+- [x] Socket.IO gateway + JWT handshake (verified)
+- [x] per-user rooms + config-gated Redis adapter (multi-instance ready)
+- [x] live push on assignment / reminder (verified: assign → live TASK_ASSIGNED)
 
 ## P9 — Scalability Hardening ✅ (5/5)
 - [x] cache-aside for membership/role + invalidation (in-memory; Redis-store ready)

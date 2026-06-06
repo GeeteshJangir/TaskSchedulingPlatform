@@ -20,6 +20,7 @@ import { CommentsModule } from './modules/comments/comments.module';
 import { ActivityModule } from './modules/activity/activity.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { RemindersModule } from './modules/reminders/reminders.module';
+import { RealtimeModule } from './modules/realtime/realtime.module';
 
 /**
  * Root module. Feature modules (auth, workspaces, projects, tasks, comments,
@@ -51,6 +52,7 @@ import { RemindersModule } from './modules/reminders/reminders.module';
     ActivityModule,
     NotificationsModule,
     RemindersModule,
+    RealtimeModule,
   ],
   providers: [
     // Global rate limiting (in-memory store; swap to Redis store for multi-instance).
