@@ -179,6 +179,29 @@ erDiagram
 
 ---
 
+## Realized migrations (as shipped — M0–M12)
+
+| # | Migration | Tables / changes |
+|---|---|---|
+| M0 | InitExtensions | `pgcrypto`, `citext` |
+| M1 | CreateUsers | `users` |
+| M2 | CreateRefreshTokens | `refresh_tokens` |
+| M3 | CreateWorkspaces | `workspaces` |
+| M4 | CreateWorkspaceMembers | `workspace_members` (+ role enum) |
+| M5 | CreateWorkspaceInvitations | `workspace_invitations` (+ status enum, partial unique) |
+| M6 | CreateProjects | `projects` (+ status enum) |
+| M7 | CreateTasks | `tasks` (self-ref, status/priority enums, partial due index) |
+| M8 | CreateComments | `comments` (self-ref replies) |
+| M9 | CreateTaskActivity | `task_activity` (jsonb metadata) |
+| M10 | CreateNotifications | `notifications` (per-user inbox) |
+| M11 | CreateReminders | `reminders` (idempotency unique key) |
+| M12 | AddUnreadNotificationsIndex | partial unread index (see [PERFORMANCE.md](./PERFORMANCE.md)) |
+
+> The `labels` / `task_labels` M2M in the diagram above is an optional design extension and
+> is **not** part of the shipped migrations.
+
+---
+
 ## 3. Constraints & Index Catalog
 
 | Table | Unique / Constraints | Indexes (beyond PK) | FK on-delete |

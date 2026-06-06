@@ -39,5 +39,4 @@ jobs:
       - run: npm run build
       - run: npm test
       - run: npm run migration:run
-      # e2e enabled in P10 (needs full app boot)
-      # - run: npm run test:e2e
+      - run: npm run test:e2e

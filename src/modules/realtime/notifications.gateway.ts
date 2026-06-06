@@ -47,6 +47,8 @@ export class NotificationsGateway implements OnGatewayConnection {
 
   @OnEvent(NOTIFICATION_CREATED)
   pushNotification(notification: Notification): void {
+    // No WS server attached (e.g. during e2e/worker) → nothing to push.
+    if (!this.server) return;
     this.server.to(this.room(notification.recipientId)).emit('notification', {
       id: notification.id,
       type: notification.type,
